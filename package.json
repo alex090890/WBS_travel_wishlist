@@ -1,7 +1,6 @@
 {
   "name": "travel_wishlist",
   "version": "1.0.0",
-  "description": "",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -12,8 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
     "express": "^4.19.2",
     "express-validator": "^7.0.1",
-    "mongoose": "^8.2.4"
-  }
+    "mongodb-watcher": "^1.3.0",
+    "mongoose": "^8.3.0",
+    "mongose": "^0.0.2-security",
+    "watcher": "^2.3.0"
+  },
+  "description": ""
 }

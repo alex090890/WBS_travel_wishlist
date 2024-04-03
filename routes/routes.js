@@ -20,11 +20,15 @@ router.get('/countries', async (req, res) => {
     }
 })
 
+router.get("/countrieslist", function(req, res) {
+    
+});
+
 router.post('/countries', async (req, res) => {
     // Validation
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-        return res.status(400).json({ erros: errors.array() })
+        return res.status(400).json({ errors: errors.array() })
     }
 
     // Existed country data
@@ -55,5 +59,23 @@ router.post('/countries', async (req, res) => {
         res.status(500).json({ message: err.message })
     }
 })
+
+router.get('/countries/:code', (req, res) => {
+  const code = req.params.code;
+
+  // Query the database for a country with the given code
+  db.collection('countries').findOne({ $or: [ { alpha2Code: code }, { alpha3Code: code } ] }, (err, country) => {
+    if (err) {
+      // Handle error
+    } else if (country) {
+      // Return the country as a JSON response
+      res.json(country);
+    } else {
+      // Handle the case where no country was found
+    }
+  });
+});
+
+
 
 export default router;

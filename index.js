@@ -17,10 +17,19 @@ monngoose
     .catch(err => console.log(err));
 
 app.get('/', (req, res) => {
-    res.send('Welcome to Mongo DB server')
+    res.send('<h1>Welcome to the database</h1>')
+});
+
+app.get('/home', (req, res) => {
+    res.send('<h1>Where shall we go?</h1>')
 });
 
 app.use('/api', routes);
+
+app.get('/home', (req, res) => {
+    res.send(`<h1>Hello</h1>`);
+});
+
 
 app.listen(PORT, (req, res) => {
     console.log(`Server is running on ${PORT}`)

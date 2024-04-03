@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Countries</title>
+</head>
+<body>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Alpha-2 Code</th>
+      <th>Alpha-3 Code</th>
+    </tr>
+    <% countries.forEach(function(country) { %>
+      <tr>
+        <td><%= country.name %></td>
+        <td><%= country.alpha2Code %></td>
+        <td><%= country.alpha3Code %></td>
+      </tr>
+    <% }); %>
+  </table>
+</body>
+</html>
