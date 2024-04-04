@@ -20,9 +20,7 @@ router.get('/countries', async (req, res) => {
     }
 })
 
-router.get("/countrieslist", function(req, res) {
-    
-});
+
 
 router.post('/countries', async (req, res) => {
     // Validation
@@ -60,21 +58,26 @@ router.post('/countries', async (req, res) => {
     }
 })
 
-router.get('/countries/:code', (req, res) => {
-  const code = req.params.code;
+router.get('/countries/:code', async (req, res) => {
+  const code = req.params.code.toUpperCase();
 
-  // Query the database for a country with the given code
-  db.collection('countries').findOne({ $or: [ { alpha2Code: code }, { alpha3Code: code } ] }, (err, country) => {
-    if (err) {
-      // Handle error
-    } else if (country) {
+  try {
+    // Query the database for a country with the given code
+    const country = await Country.findOne({ $or: [ { alpha2Code: code }, { alpha3Code: code } ] });
+
+    if (country) {
       // Return the country as a JSON response
       res.json(country);
     } else {
       // Handle the case where no country was found
+      res.status(404).send('Country not found');
     }
-  });
+  } catch (err) {
+    // Handle error
+    res.status(500,).send('Error querying database');
+  }
 });
+
 
 
 
