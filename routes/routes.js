@@ -62,6 +62,31 @@ router.get('/countries/:code', async (req, res) => {
   const code = req.params.code.toUpperCase();
 
   try {
+    // Query the database for a country with the given code, checking both alpha2Code and alpha3Code fields
+    const country = await Country.findOne({
+      $or: [
+        { alpha2Code: code },
+        { alpha3Code: code }
+      ]
+    });
+
+    if (country) {
+      // Return the country as a JSON response
+      res.json(country);
+    } else {
+      // Handle the case where no country was found
+      res.status(404).send('Country not found');
+    }
+  } catch (err) {
+    // Handle error
+    res.status(500).send('Error querying database');
+  }
+});
+
+router.put('/countries/:code', async (req, res) => {
+  const code = req.params.code.toUpperCase();
+
+  try {
     // Query the database for a country with the given code
     const country = await Country.findOne({ $or: [ { alpha2Code: code }, { alpha3Code: code } ] });
 
@@ -78,7 +103,41 @@ router.get('/countries/:code', async (req, res) => {
   }
 });
 
+router.delete('/countries/:code', async (req, res) => {
+  const code = req.params.code.toUpperCase();
 
+  try {
+    // Query the database for a country with the given code
+    const country = await Country.findOne({ $or: [ { alpha2Code: code }, { alpha3Code: code } ] });
 
+    if (country) {
+      // Return the country as a JSON response
+      res.json(country);
+    } else {
+      // Handle the case where no country was found
+      res.status(404).send('Country not found');
+    }
+  } catch (err) {
+    // Handle error
+    res.status(500,).send('Error querying database');
+  }
+});
+
+/*router.put('/countries/:code', async (req, res) => {
+  const { code } = req.params;
+  const updatedFields = req.body;
+
+  try {
+    const country = await Country.findOne({ $or: [ { alpha2Code: code }, { alpha3Code: code } ] });
+
+    if (!country) {
+      return res.status(404).json({ message: 'Country not found' });
+    }
+
+    res.json(country);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});*/
 
 export default router;
