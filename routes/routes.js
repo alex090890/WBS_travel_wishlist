@@ -84,23 +84,22 @@ router.get('/countries/:code', async (req, res) => {
 });
 
 router.put('/countries/:code', async (req, res) => {
-  const code = req.params.code.toUpperCase();
+    const code = req.params.code.toUpperCase();
+    const updates = req.body;
 
-  try {
-    // Query the database for a country with the given code
-    const country = await Country.findOne({ $or: [ { alpha2Code: code }, { alpha3Code: code } ] });
+    try {
+        const country = await Country.findOne({ alpha2Code: code });
+        if (!country) {
+            return res.status(404).json({ message: 'Country not found' });
+        }
 
-    if (country) {
-      // Return the country as a JSON response
-      res.json(country);
-    } else {
-      // Handle the case where no country was found
-      res.status(404).send('Country not found');
+        Object.keys(updates).forEach((update) => country[update] = updates[update]);
+        await country.save();
+
+        res.status(200).json(country);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
-  } catch (err) {
-    // Handle error
-    res.status(500,).send('Error querying database');
-  }
 });
 
 router.delete('/countries/:code', async (req, res) => {
@@ -108,21 +107,73 @@ router.delete('/countries/:code', async (req, res) => {
 
   try {
     // Query the database for a country with the given code
-    const country = await Country.findOne({ $or: [ { alpha2Code: code }, { alpha3Code: code } ] });
+    const result = await Country.deleteOne({ $or: [ { alpha2Code: code }, { alpha3Code: code } ] });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Country not found' });
+    }
+
+    res.status(200).json({ message: 'Country successfully deleted' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/countrieslist', async (req, res) => {
+  try {
+    // Fetch all countries from the database
+    const countries = await Country.find({}).sort({alpha2Code: 1});
+
+    if (countries) {
+      // Start the HTML string
+      let html = '<h1>Where do I want to go?</h1>'
+      html += '<ol>';
+
+      // Add each country to the HTML string
+      countries.forEach(country => {
+        html += `<li>${country.name} (${country.alpha2Code}, ${country.alpha3Code})</li>`;
+      });
+
+      // End the HTML string
+      html += '</ol>';
+
+      // Send the HTML string as a response
+      res.send(html);
+    } else {
+      // Handle the case where no countries were found
+      res.status(404).send('No countries found');
+    }
+  } catch (err) {
+    // Handle error
+    res.status(500).send('Error querying database');
+  }
+});
+
+router.get('/country/:code', async (req, res) => {
+  const code = req.params.code.toUpperCase();
+
+  try {
+    // Query the database for a country with the given code, checking both alpha2Code and alpha3Code fields
+    const country = await Country.findOne({
+      $or: [
+        { alpha2Code: code },
+        { alpha3Code: code }
+      ]
+    });
 
     if (country) {
-      // Return the country as a JSON response
-      res.json(country);
+      let html = `<h1>${country.name}</h1>`;
+      html += `<p><strong>Alpha-2 code:</strong> ${country.alpha2Code}</p>`;
+      html += `<p><strong>Alpha 3 code:</strong> ${country.alpha3Code}</p>`;
+      res.send(html);
     } else {
       // Handle the case where no country was found
       res.status(404).send('Country not found');
     }
   } catch (err) {
     // Handle error
-    res.status(500,).send('Error querying database');
+    res.status(500).send('Error querying database');
   }
 });
-
-
 
 export default router;

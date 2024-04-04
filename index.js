@@ -25,10 +25,9 @@ app.get('/home', (req, res) => {
 });
 
 app.use('/api', routes);
+app.use('/home', routes);
 
-app.get('/home', (req, res) => {
-    res.send(`<h1>Hello</h1>`);
-});
+
 
 
 app.listen(PORT, (req, res) => {
